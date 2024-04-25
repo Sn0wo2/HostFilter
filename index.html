@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Host Filter</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        
+        textarea {
+            width: 100%;
+            height: 200px;
+            margin-bottom: 10px;
+        }
+        
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+        }
+        
+        #output {
+            white-space: pre-wrap;
+        }
+    </style>
+</head>
+<body>
+    <h1>Host Filter</h1>
+    <textarea id="inputHosts" placeholder="请将hosts文件内容粘贴到此处"></textarea>
+    <br>
+    <button onclick="filterHosts()">筛选</button>
+    <br><br>
+    <div id="output"></div>
+
+    <script>
+        function filterHosts() {
+            const inputHosts = document.getElementById('inputHosts').value;
+            const lines = inputHosts.split('\n');
+            const regex = /^(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})\s+([\w\.-]+)/;
+            const outputLines = [];
+
+            for (let i = 0; i < lines.length; i++) {
+                const line = lines[i];
+                const matches = line.match(regex);
+
+                if (matches && matches.length === 3) {
+                    const domain = matches[2];
+                    const segments = domain.split('.');
+
+                    if (segments.length <= 5 && domain.length <= 63) {
+                        const outputLine = matches[1] + '^%^20' + domain;
+                        outputLines.push(outputLine);
+                    }
+                }
+            }
+
+            const outputContent = outputLines.join('^%^0A');
+            document.getElementById('output').textContent = outputContent;
+        }
+    </script>
+</body>
+</html>
